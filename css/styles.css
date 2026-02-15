@@ -2635,9 +2635,18 @@ h1, h2, h3, h4, h5, h6 {
     transition: none;
   }
 
-  /* No animation on bg-panel__image on mobile — don't waste GPU memory */
+  /* No animation on bg-panel__image on mobile — don't waste GPU memory.
+     Cream fallback prevents the previous panel's sticky image from
+     bleeding through the window before the correct image loads. */
   .bg-panel__image {
     will-change: auto;
+    background-color: var(--color-cream);
+  }
+
+  /* Override desktop-only custom sizing — cover fills the full 100vh */
+  #about .bg-panel__image {
+    background-size: cover;
+    background-position: center;
   }
 
   /* --- Section padding reductions --- */

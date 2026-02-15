@@ -84,13 +84,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================================
   const bgPanelInners = new Map();
 
+  const isMobileView = window.matchMedia('(max-width: 767px)').matches;
+
   if (!prefersReducedMotion) {
     revealSections.forEach((reveal, index) => {
       const panel = reveal.closest('.bg-panel');
       const bgImage = panel ? panel.querySelector('.bg-panel__image') : null;
       if (!bgImage) return;
 
-      // Create inner div for parallax + zoom (scale on inner avoids
+      const bgUrl = bgImage.dataset.bg || '';
+      const inlineUrl = bgImage.style.backgroundImage;
+
+      if (isMobileView) {
+        // MOBILE: No inner div needed — no parallax/zoom/pinning.
+        // Set background directly on the outer element to avoid
+        // stacking/lazy-load issues that cause wrong images to show.
+        // CSS default background-size: cover handles all sections correctly.
+        if (bgUrl) {
+          bgImage.style.backgroundImage = "url('" + bgUrl + "')";
+          bgImage.removeAttribute('data-bg');
+        }
+        return; // skip inner div creation on mobile
+      }
+
+      // DESKTOP: Create inner div for parallax + zoom (scale on inner avoids
       // breaking ScrollTrigger pin calculations on the outer element)
       const inner = document.createElement('div');
       inner.style.position = 'absolute';
@@ -101,15 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
       inner.style.transformOrigin = 'center center';
 
       // Preserve About section's custom background sizing
-      // Slightly larger on mobile to fill the reveal window vertically
       if (panel.id === 'about') {
-        const mobileView = window.matchMedia('(max-width: 767px)').matches;
-        inner.style.backgroundSize = mobileView ? '125% auto' : '120% auto';
+        inner.style.backgroundSize = '120% auto';
       }
-
-      // Read background URL from data-bg attribute (lazy) or inline style (fallback)
-      const bgUrl = bgImage.dataset.bg || '';
-      const inlineUrl = bgImage.style.backgroundImage;
 
       if (bgUrl) {
         // First panel (services) is near-fold — load eagerly
@@ -129,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         bgImage.removeAttribute('data-bg');
       } else if (inlineUrl && inlineUrl !== 'none') {
-        // Fallback: read from inline style (if data-bg not used)
         inner.style.backgroundImage = inlineUrl;
       }
 
