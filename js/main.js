@@ -98,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
       inner.style.backgroundSize = 'cover';
       inner.style.backgroundPosition = 'center';
       inner.style.backgroundRepeat = 'no-repeat';
-      inner.style.willChange = 'transform';
       inner.style.transformOrigin = 'center center';
 
       // Preserve About section's custom background sizing
@@ -194,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
               trigger: panel,
               start: 'top bottom',
               end: 'bottom top',
-              scrub: true
+              scrub: 1
             }
           });
         });
@@ -353,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
           trigger: reveal,
           start: 'top 80%',
           end: 'bottom 20%',
-          scrub: true
+          scrub: 1
         }
       });
     });
@@ -372,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
               trigger: reveal,
               start: 'top 80%',
               end: 'bottom 20%',
-              scrub: true
+              scrub: 1
             }
           });
         });
@@ -460,12 +459,14 @@ document.addEventListener('DOMContentLoaded', () => {
       gsap.to(marquee, { timeScale: 1, duration: 0.5, ease: 'power2.out' });
     });
 
-    // Scroll acceleration
+    // Scroll acceleration (only runs rAF loop when marquee is visible)
     if (!prefersReducedMotion) {
       let lastScrollY = window.scrollY;
       let targetSpeed = 1;
       let currentSpeed = 1;
       let scrollTimeout;
+      let marqueeVisible = false;
+      let rafId = null;
 
       function updateSpeed() {
         var diff = targetSpeed - currentSpeed;
@@ -474,8 +475,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isPaused) {
           marquee.timeScale(currentSpeed);
         }
-        requestAnimationFrame(updateSpeed);
+        if (marqueeVisible) {
+          rafId = requestAnimationFrame(updateSpeed);
+        }
       }
+
+      var marqueeObserver = new IntersectionObserver(function (entries) {
+        marqueeVisible = entries[0].isIntersecting;
+        if (marqueeVisible && rafId === null) {
+          rafId = requestAnimationFrame(updateSpeed);
+        } else if (!marqueeVisible) {
+          rafId = null;
+        }
+      }, { rootMargin: '100px 0px' });
+      marqueeObserver.observe(bar);
 
       window.addEventListener('scroll', function () {
         var currentScrollY = window.scrollY;
@@ -488,8 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
           targetSpeed = 1;
         }, 300);
       }, { passive: true });
-
-      requestAnimationFrame(updateSpeed);
     }
   })();
 
@@ -538,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
           trigger: section,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.4
+          scrub: 0.6
         }
       });
 
@@ -918,6 +929,8 @@ document.addEventListener('DOMContentLoaded', () => {
     var resumeTimer = null;
     var halfWidth = 0;
     var pos = 0;               // float accumulator — avoids sub-pixel rounding
+    var carouselVisible = false;
+    var carouselRafId = null;
 
     function measure() {
       halfWidth = set.offsetWidth;
@@ -929,7 +942,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pos >= halfWidth) pos -= halfWidth;
         scroller.scrollLeft = Math.round(pos);
       }
-      requestAnimationFrame(tick);
+      if (carouselVisible) {
+        carouselRafId = requestAnimationFrame(tick);
+      } else {
+        carouselRafId = null;
+      }
     }
 
     function enableSnap() {
@@ -1002,10 +1019,21 @@ document.addEventListener('DOMContentLoaded', () => {
       scheduleResume();
     }, { passive: true });
 
+    // Only run rAF loop when carousel is visible
+    var carouselObserver = new IntersectionObserver(function (entries) {
+      carouselVisible = entries[0].isIntersecting;
+      if (carouselVisible && carouselRafId === null) {
+        // Sync accumulator before resuming
+        pos = scroller.scrollLeft;
+        if (halfWidth > 0 && pos >= halfWidth) pos -= halfWidth;
+        carouselRafId = requestAnimationFrame(tick);
+      }
+    }, { rootMargin: '100px 0px' });
+
     // Defer init until after first paint so layout is settled
     requestAnimationFrame(function () {
       measure();
-      requestAnimationFrame(tick);
+      carouselObserver.observe(scroller);
     });
     window.addEventListener('resize', debounce(measure, 250));
   })();

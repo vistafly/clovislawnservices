@@ -155,6 +155,7 @@ body {
   color: var(--color-text);
   background-color: var(--color-bg);
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 img,
@@ -670,7 +671,7 @@ h1, h2, h3, h4, h5, h6 {
 .hero__bg {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
 }
 
 .hero__bg-img {
@@ -678,6 +679,8 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   object-fit: cover;
   object-position: center;
+  /* Prevents mobile browsers from culling the image during scroll */
+  transform: translateZ(0);
 }
 
 .hero__overlay {
@@ -806,6 +809,7 @@ h1, h2, h3, h4, h5, h6 {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
+  z-index: var(--z-base);
   color: rgba(255, 255, 255, 0.7);
   animation: scrollBounce 2s ease-in-out infinite;
 }
@@ -898,6 +902,7 @@ h1, h2, h3, h4, h5, h6 {
    ========================================================== */
 .bg-panel {
   position: relative;
+  contain: layout style;
 }
 
 /* Divider between consecutive bg-panels (e.g. pricing → about) */
@@ -925,6 +930,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: var(--space-4xl) 0;
   /* Content slides over the fixed background image */
   box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.10);
+  contain: layout style paint;
 }
 
 
@@ -940,6 +946,7 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
+  contain: layout style paint;
 }
 
 /* --- Geometric mask (box-shadow trick + skew) --- */
