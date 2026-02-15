@@ -440,14 +440,14 @@ document.addEventListener('DOMContentLoaded', () => {
       gsap.to(marquee, { timeScale: 1, duration: 0.5, ease: 'power2.out' });
     });
 
-    // Scroll acceleration (only runs rAF loop when marquee is visible)
-    if (!prefersReducedMotion) {
+    // Scroll acceleration — DESKTOP ONLY
+    // On mobile the scroll listener + rAF loop conflicts with touch
+    // swiping, causing jank. The marquee still runs at constant speed.
+    if (!prefersReducedMotion && window.matchMedia('(min-width: 768px)').matches) {
       let lastScrollY = window.scrollY;
       let targetSpeed = 1;
       let currentSpeed = 1;
       let scrollTimeout;
-      let marqueeVisible = false;
-      let rafId = null;
 
       function updateSpeed() {
         var diff = targetSpeed - currentSpeed;
@@ -456,20 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isPaused) {
           marquee.timeScale(currentSpeed);
         }
-        if (marqueeVisible) {
-          rafId = requestAnimationFrame(updateSpeed);
-        }
+        requestAnimationFrame(updateSpeed);
       }
-
-      var marqueeObserver = new IntersectionObserver(function (entries) {
-        marqueeVisible = entries[0].isIntersecting;
-        if (marqueeVisible && rafId === null) {
-          rafId = requestAnimationFrame(updateSpeed);
-        } else if (!marqueeVisible) {
-          rafId = null;
-        }
-      }, { rootMargin: '100px 0px' });
-      marqueeObserver.observe(bar);
 
       window.addEventListener('scroll', function () {
         var currentScrollY = window.scrollY;
@@ -482,6 +470,8 @@ document.addEventListener('DOMContentLoaded', () => {
           targetSpeed = 1;
         }, 300);
       }, { passive: true });
+
+      requestAnimationFrame(updateSpeed);
     }
   })();
 
