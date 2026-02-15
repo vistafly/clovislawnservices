@@ -515,12 +515,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // --- No pin! CSS sticky handles keeping content in view.
       // ScrollTrigger just scrubs the card animation as the
       // tall section scrolls through. ---
+      // Higher scrub value on mobile for smoother interpolation
+      var isMobile = window.matchMedia('(max-width: 767px)').matches;
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.6
+          scrub: isMobile ? 1.2 : 0.6
         }
       });
 
@@ -868,9 +870,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ============================================
   // 16. PERFORMANCE: debounced resize refresh
+  // Only refresh when width changes — height-only changes (mobile
+  // address bar show/hide) should NOT trigger a full recalculation.
   // ============================================
-  window.addEventListener('resize', debounce(() => {
-    ScrollTrigger.refresh();
+  var lastWidth = window.innerWidth;
+  window.addEventListener('resize', debounce(function () {
+    var newWidth = window.innerWidth;
+    if (newWidth !== lastWidth) {
+      lastWidth = newWidth;
+      ScrollTrigger.refresh();
+    }
   }, 250));
 
   // ============================================

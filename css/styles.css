@@ -145,6 +145,9 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Tell the browser vertical scroll won't be cancelled by JS —
+     allows scroll to start immediately without waiting for touch handlers */
+  touch-action: pan-y;
 }
 
 body {
@@ -2367,7 +2370,6 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
     gap: var(--space-md);
     padding-bottom: var(--space-md);
     -ms-overflow-style: none;
@@ -2601,7 +2603,12 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 767px) {
   /* --- Nav: disable heavy transitions on mobile --- */
   .nav {
-    transition: background-color 0.15s ease, padding 0.15s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    padding: 0.75rem 0; /* Fixed padding — no layout shift on scroll */
+  }
+
+  .nav--scrolled {
+    padding: 0.75rem 0; /* Same as above — no layout recalculation */
   }
 
   .nav__logo-img {
@@ -2609,11 +2616,28 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .nav--scrolled .nav__logo-default {
+    opacity: 0;
+    transform: none; /* No scale — just swap instantly */
     transition: none;
   }
 
   .nav--scrolled .nav__logo-scrolled {
+    opacity: 1;
+    transform: translateY(-50%); /* No scale — just swap instantly */
     transition: none;
+  }
+
+  /* Remove expensive backdrop-filter from hero rating on mobile */
+  .hero__rating {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.35);
+    transition: none;
+  }
+
+  /* No animation on bg-panel__image on mobile — don't waste GPU memory */
+  .bg-panel__image {
+    will-change: auto;
   }
 
   /* --- Section padding reductions --- */
