@@ -672,6 +672,9 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: 0;
   z-index: 0;
+  /* Keep GPU layer alive so mobile browsers don't cull on scroll-away */
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .hero__bg-img {
@@ -902,7 +905,6 @@ h1, h2, h3, h4, h5, h6 {
    ========================================================== */
 .bg-panel {
   position: relative;
-  contain: layout style;
 }
 
 /* Divider between consecutive bg-panels (e.g. pricing → about) */
@@ -946,7 +948,6 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
-  contain: layout style paint;
 }
 
 /* --- Geometric mask (box-shadow trick + skew) --- */

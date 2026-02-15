@@ -148,9 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (nav) {
     ScrollTrigger.create({
       start: 'top -80',
-      onUpdate: (self) => {
-        nav.classList.toggle('nav--scrolled', self.scroll() > 80);
-      }
+      onEnter: () => nav.classList.add('nav--scrolled'),
+      onLeaveBack: () => nav.classList.remove('nav--scrolled')
     });
   }
 
@@ -175,28 +174,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
 
-      // --- MOBILE: simpler approach, no pinning ---
+      // --- MOBILE: no pinning, no parallax (saves scroll perf) ---
       '(max-width: 767px)': function () {
-        bgPanels.forEach((panel) => {
-          const bgImage = panel.querySelector('.bg-panel__image');
-          if (!bgImage) return;
-
-          // Target the inner div if it exists, otherwise the element itself
-          const target = bgImage.firstElementChild || bgImage;
-
-          gsap.fromTo(target, {
-            backgroundPosition: '50% 0%'
-          }, {
-            backgroundPosition: '50% 30%',
-            ease: 'none',
-            scrollTrigger: {
-              trigger: panel,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1
-            }
-          });
-        });
+        // Static background — parallax shift is barely visible on
+        // small screens and the scrubbed ScrollTrigger per panel
+        // adds measurable overhead on low-end devices.
       }
     });
   }
@@ -343,25 +325,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // DOM was already prepared above; this only creates animations.
   // ============================================
   if (!prefersReducedMotion) {
-    // Scale zoom runs on ALL viewports
-    bgPanelInners.forEach(({ inner }, reveal) => {
-      gsap.fromTo(inner, { scale: 1 }, {
-        scale: 1.12,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: reveal,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          scrub: 1
-        }
-      });
-    });
-
-    // backgroundPosition shift on DESKTOP only — on mobile,
-    // section 2 already animates backgroundPosition on the same elements
+    // Parallax + zoom on DESKTOP only — on mobile these scrubbed
+    // ScrollTriggers (one per panel) cause measurable scroll jank.
     ScrollTrigger.matchMedia({
       '(min-width: 768px)': function () {
         bgPanelInners.forEach(({ inner }, reveal) => {
+          // Subtle zoom
+          gsap.fromTo(inner, { scale: 1 }, {
+            scale: 1.12,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: reveal,
+              start: 'top 80%',
+              end: 'bottom 20%',
+              scrub: 1
+            }
+          });
+
+          // Background position shift
           gsap.fromTo(inner, {
             backgroundPosition: '50% 40%'
           }, {
