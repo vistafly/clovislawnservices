@@ -537,15 +537,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // Timeline layout (3 cards):
-      //   0.00–0.15  card 0 dwell (visible, no animation)
-      //   0.15–0.35  card 0 peels away
-      //   0.35–0.45  card 1 dwell
-      //   0.45–0.65  card 1 peels away
-      //   0.65–1.00  card 2 dwell (last card stays)
+      //   0.00–0.20  card 0 dwell (visible, no animation)
+      //   0.20–0.40  card 0 peels away
+      //   0.40–0.55  card 1 dwell
+      //   0.55–0.75  card 1 peels away
+      //   0.75–1.00  card 2 dwell (last card stays)
       var peels = totalCards - 1;     // 2 peel animations
       var peelDur = 0.20;             // each peel takes 20% of scroll
-      var dwellFirst = 0.15;          // first card holds 15%
-      var dwellMid = 0.10;            // middle dwell between peels
+      var dwellFirst = 0.20;          // first card holds 20%
+      var dwellMid = 0.15;            // middle dwell between peels
       var pos = dwellFirst;           // start after first dwell
 
       for (var i = 0; i < peels; i++) {
@@ -559,6 +559,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, pos);
         pos += peelDur + (i < peels - 1 ? dwellMid : 0);
       }
+
+      // Extend timeline so the last card gets a proper dwell period.
+      // Without this, the timeline ends at the last peel (0.75) and
+      // scrub maps 0–0.75 to the full scroll, leaving no time for
+      // the last card to stay visible.
+      tl.addLabel('end', 1.0);
     })();
   }
 
