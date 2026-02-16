@@ -33,9 +33,6 @@
   <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css">
 
-  <!-- Preload hero image for faster LCP -->
-  <link rel="preload" as="image" href="assets/images/hero.jpg" fetchpriority="high">
-
   <!-- JSON-LD Structured Data: LocalBusiness -->
   <script type="application/ld+json">
   {
@@ -329,6 +326,7 @@
           </div>
           <span class="hero__rating-score">4.7</span>
           <span class="hero__rating-label">on Google</span>
+          <span class="hero__rating-tap">Leave a review</span>
         </a>
         <h1 class="hero__title">Premium Lawn Care in Clovis, Fresno &amp; Madera Ranchos</h1>
         <div class="hero__ctas">
@@ -446,7 +444,7 @@
     <!-- ============================================
          SERVICES
          ============================================ -->
-    <section class="bg-panel" id="services">
+    <section class="bg-panel">
       <div class="bg-panel__image" data-bg="assets/images/bg-services.jpg" role="img" aria-label="Freshly mowed striped lawn with mature trees in the Central Valley"></div>
       <div class="bg-panel__reveal" data-side="right">
         <div class="bg-panel__reveal-window" aria-hidden="true"></div>
@@ -474,7 +472,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-panel__content">
+      <div class="bg-panel__content" id="services">
         <div class="section-container">
           <h2 class="section-title">Our Lawn Care Services</h2>
           <p class="section-subtitle">Professional, reliable lawn care tailored to your property's needs.</p>
@@ -574,7 +572,7 @@
     <!-- ============================================
          PRICING
          ============================================ -->
-    <section class="bg-panel" id="pricing">
+    <section class="bg-panel">
       <div class="bg-panel__image" data-bg="assets/images/bg-pricing.jpg" role="img" aria-label="Freshly mowed residential backyard lawn in Clovis with clean mowing stripes"></div>
       <div class="bg-panel__reveal" data-side="left">
         <div class="bg-panel__reveal-window" aria-hidden="true"></div>
@@ -602,7 +600,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-panel__content">
+      <div class="bg-panel__content" id="pricing">
         <div class="section-container">
           <h2 class="section-title">Simple, Transparent Pricing</h2>
           <p class="section-subtitle">No hidden fees, no contracts. Just honest pricing for quality lawn care.</p>

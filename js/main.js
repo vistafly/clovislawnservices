@@ -95,11 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
       var bgUrl = bgImage.dataset.bg || '';
       const inlineUrl = bgImage.style.backgroundImage;
 
-      // Use desktop-optimised image for About section
-      if (!isMobileView && panel.id === 'about') {
-        bgUrl = 'assets/images/bg-aboutdesktop.jpg';
-      }
-
       if (isMobileView) {
         // MOBILE: Set background on the reveal container so image and
         // box-shadow mask share the same compositor layer — prevents
