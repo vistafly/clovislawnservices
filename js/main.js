@@ -92,8 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const bgImage = panel ? panel.querySelector('.bg-panel__image') : null;
       if (!bgImage) return;
 
-      const bgUrl = bgImage.dataset.bg || '';
+      var bgUrl = bgImage.dataset.bg || '';
       const inlineUrl = bgImage.style.backgroundImage;
+
+      // Use desktop-optimised image for About section
+      if (!isMobileView && panel.id === 'about') {
+        bgUrl = 'assets/images/bg-aboutdesktop.jpg';
+      }
 
       if (isMobileView) {
         // MOBILE: No inner div needed — no parallax/zoom/pinning.
@@ -117,9 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
       inner.style.backgroundRepeat = 'no-repeat';
       inner.style.transformOrigin = 'center center';
 
-      // Preserve About section's custom background sizing
+      // About section: use better-proportioned desktop image + custom sizing
       if (panel.id === 'about') {
-        inner.style.backgroundSize = '120% auto';
+        inner.style.backgroundSize = 'cover';
+        inner.style.backgroundPosition = 'center';
       }
 
       if (bgUrl) {
@@ -285,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       ScrollTrigger.create({
         trigger: reveal,
-        start: 'top 70%',
+        start: isMobileView ? 'top 60%' : 'top 70%',
         once: true,
         onEnter: () => {
           const tl = gsap.timeline();
@@ -357,6 +363,41 @@ document.addEventListener('DOMContentLoaded', () => {
             backgroundPosition: '50% 40%'
           }, {
             backgroundPosition: '50% 60%',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: reveal,
+              start: 'top 80%',
+              end: 'bottom 20%',
+              scrub: 1
+            }
+          });
+        });
+      },
+
+      // --- MOBILE: inverted parallax (reverse of desktop direction) ---
+      '(max-width: 767px)': function () {
+        revealSections.forEach(function (reveal) {
+          var panel = reveal.closest('.bg-panel');
+          var bgImage = panel ? panel.querySelector('.bg-panel__image') : null;
+          if (!bgImage) return;
+
+          // Inverted zoom: starts zoomed in, eases back to normal
+          gsap.fromTo(bgImage, { scale: 1.12 }, {
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: reveal,
+              start: 'top 80%',
+              end: 'bottom 20%',
+              scrub: 1
+            }
+          });
+
+          // Inverted bg-position shift: pans upward instead of downward
+          gsap.fromTo(bgImage, {
+            backgroundPosition: '50% 60%'
+          }, {
+            backgroundPosition: '50% 40%',
             ease: 'none',
             scrollTrigger: {
               trigger: reveal,

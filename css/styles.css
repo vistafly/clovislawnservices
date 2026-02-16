@@ -896,6 +896,12 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
 }
 
+@media (max-width: 767px) {
+  .bg-panel {
+    overflow: hidden;
+  }
+}
+
 /* Divider between consecutive bg-panels (e.g. pricing → about) */
 .bg-panel + .bg-panel .bg-panel__reveal {
   box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.10);
@@ -2633,12 +2639,13 @@ h1, h2, h3, h4, h5, h6 {
 
   /* Center hero content on mobile */
   .hero {
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
   }
 
   .hero__content {
     text-align: center;
+    padding-bottom: 0;
   }
 
   .hero__ctas {
