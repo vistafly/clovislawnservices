@@ -765,6 +765,15 @@ h1, h2, h3, h4, h5, h6 {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.hero__rating-tap {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: rgba(212, 168, 67, 0.7);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 0.6rem;
+}
+
 @keyframes ratingFadeIn {
   from {
     opacity: 0;
@@ -1192,6 +1201,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   overflow-x: scroll;
   overflow-y: hidden;
+  scroll-snap-type: none;
   -ms-overflow-style: none;
   scrollbar-width: none;
   cursor: grab;
