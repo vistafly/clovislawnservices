@@ -676,6 +676,13 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   z-index: 0;
   background: url('../assets/images/hero.jpg') center / cover no-repeat;
+  animation: heroZoom 25s ease-out forwards;
+  will-change: transform;
+}
+
+@keyframes heroZoom {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.35); }
 }
 
 .hero__overlay {
@@ -1582,7 +1589,7 @@ h1, h2, h3, h4, h5, h6 {
 .about {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: var(--space-4xl);
   align-items: center;
 }
 
@@ -2234,9 +2241,11 @@ h1, h2, h3, h4, h5, h6 {
 /* --- Mobile: blob mask adjustments --- */
 @media (max-width: 767px) {
   .bg-panel__reveal {
-    min-height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     padding-bottom: var(--space-xl);
   }
 
@@ -2611,6 +2620,17 @@ h1, h2, h3, h4, h5, h6 {
     transition: none;
   }
 
+  /* Lighter hero zoom on mobile — shorter duration, smaller scale */
+  .hero__bg {
+    animation-duration: 20s;
+    animation-name: heroZoomMobile;
+  }
+
+  @keyframes heroZoomMobile {
+    0%   { transform: scale(1); }
+    100% { transform: scale(1.18); }
+  }
+
   /* Center hero content on mobile */
   .hero {
     align-items: flex-end;
@@ -2623,6 +2643,16 @@ h1, h2, h3, h4, h5, h6 {
 
   .hero__ctas {
     justify-content: center;
+  }
+
+  /* Tighter about section spacing on mobile */
+  .about {
+    gap: var(--space-2xl);
+  }
+
+  .about__signature {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
   }
 
   /* Remove expensive backdrop-filter from hero rating on mobile */
@@ -2931,7 +2961,7 @@ h1, h2, h3, h4, h5, h6 {
   .about {
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--space-2xl);
+    gap: 8rem;
   }
 
   .about__text {
@@ -3166,6 +3196,11 @@ h1, h2, h3, h4, h5, h6 {
   [data-animate] {
     opacity: 1;
     transform: none;
+  }
+
+  .hero__bg {
+    animation: none !important;
+    transform: none !important;
   }
 
   .hero__scroll-indicator {
