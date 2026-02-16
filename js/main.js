@@ -537,15 +537,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // Timeline layout (3 cards):
-      //   0.00–0.20  card 0 dwell (visible, no animation)
-      //   0.20–0.40  card 0 peels away
-      //   0.40–0.55  card 1 dwell
-      //   0.55–0.75  card 1 peels away
-      //   0.75–1.00  card 2 dwell (last card stays)
+      //   0.00–0.15  card 0 dwell (visible, no animation)
+      //   0.15–0.35  card 0 peels away
+      //   0.35–0.45  card 1 dwell
+      //   0.45–0.65  card 1 peels away
+      //   0.65–1.00  card 2 dwell (last card stays)
       var peels = totalCards - 1;     // 2 peel animations
       var peelDur = 0.20;             // each peel takes 20% of scroll
-      var dwellFirst = 0.20;          // first card holds 20%
-      var dwellMid = 0.15;            // middle dwell between peels
+      var dwellFirst = 0.15;          // first card holds 15%
+      var dwellMid = 0.10;            // middle dwell between peels
       var pos = dwellFirst;           // start after first dwell
 
       for (var i = 0; i < peels; i++) {
@@ -939,21 +939,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    function enableSnap() {
-      scroller.classList.add('is-snapping');
-    }
-
-    function disableSnap() {
-      scroller.classList.remove('is-snapping');
-    }
-
     function pauseScroll() {
       paused = true;
       clearTimeout(resumeTimer);
     }
 
     function resumeScroll() {
-      disableSnap();
       // Sync accumulator to actual scroll position before resuming
       pos = scroller.scrollLeft;
       if (halfWidth > 0 && pos >= halfWidth) pos -= halfWidth;
@@ -978,7 +969,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.button !== 0) return;
       dragging = true;
       pauseScroll();
-      disableSnap();    // disable during active drag
       dragStartX = e.pageX;
       dragScrollLeft = scroller.scrollLeft;
       scroller.setPointerCapture(e.pointerId);
@@ -986,13 +976,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scroller.addEventListener('pointermove', function (e) {
       if (!dragging) return;
-      scroller.scrollLeft = dragScrollLeft - (e.pageX - dragStartX);
+      var newScroll = dragScrollLeft - (e.pageX - dragStartX);
+      if (halfWidth > 0) {
+        if (newScroll >= halfWidth) {
+          newScroll -= halfWidth;
+          dragScrollLeft -= halfWidth;
+        } else if (newScroll <= 0) {
+          newScroll += halfWidth;
+          dragScrollLeft += halfWidth;
+        }
+      }
+      scroller.scrollLeft = newScroll;
     });
 
     function endDrag() {
       if (!dragging) return;
       dragging = false;
-      enableSnap();     // snap to nearest card center on release
       scheduleResume();
     }
 
@@ -1002,12 +1001,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Touch swipe
     scroller.addEventListener('touchstart', function () {
       pauseScroll();
-      disableSnap();
     }, { passive: true });
     scroller.addEventListener('touchend', function () {
-      enableSnap();
       scheduleResume();
     }, { passive: true });
+
+    // Seamless wrapping during native touch/scroll
+    scroller.addEventListener('scroll', function () {
+      if (dragging || !paused || halfWidth <= 0) return;
+      var sl = scroller.scrollLeft;
+      if (sl >= halfWidth) {
+        scroller.scrollLeft = sl - halfWidth;
+      } else if (sl <= 1) {
+        scroller.scrollLeft = sl + halfWidth;
+      }
+    });
 
     // Only run rAF loop when carousel is visible
     var carouselObserver = new IntersectionObserver(function (entries) {

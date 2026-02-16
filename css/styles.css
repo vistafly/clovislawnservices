@@ -1204,14 +1204,6 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-user-select: none;
 }
 
-/* Snap to card center — only during user interaction */
-.services-carousel__scroller.is-snapping {
-  scroll-snap-type: x mandatory;
-}
-
-.services-carousel__scroller.is-snapping .service-card {
-  scroll-snap-align: center;
-}
 
 .services-carousel__track {
   display: flex;
@@ -1222,7 +1214,8 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-shrink: 0;
   gap: var(--space-2xl);
-  padding: var(--space-md) var(--space-2xl);
+  padding: var(--space-md) 0;
+  padding-right: var(--space-2xl);
 }
 
 .service-card {
@@ -2467,7 +2460,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: transparent;
   position: relative;
   padding: 0;
-  min-height: 250vh;
+  min-height: 200vh;
 }
 
 /* Map sticks to viewport via CSS sticky — no JS pin needed */
@@ -2872,7 +2865,6 @@ h1, h2, h3, h4, h5, h6 {
 
   .services-carousel__set {
     gap: var(--space-3xl);
-    padding-left: var(--space-3xl);
     padding-right: var(--space-3xl);
   }
 
