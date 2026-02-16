@@ -2253,6 +2253,9 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     justify-content: center;
     padding-bottom: var(--space-xl);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .bg-panel__reveal-window {
@@ -2670,19 +2673,15 @@ h1, h2, h3, h4, h5, h6 {
     transition: none;
   }
 
-  /* No animation on bg-panel__image on mobile — don't waste GPU memory.
-     Cream fallback prevents the previous panel's sticky image from
-     bleeding through the window before the correct image loads. */
+  /* Hide sticky bg-panel__image on mobile — background is set on
+     .bg-panel__reveal instead so image and box-shadow mask share
+     the same compositor layer (prevents iOS Safari momentum-scroll desync). */
   .bg-panel__image {
-    will-change: auto;
-    background-color: var(--color-cream);
+    display: none;
   }
 
-  /* Override desktop-only custom sizing — cover fills the full 100vh */
-  #about .bg-panel__image {
-    background-size: cover;
-    background-position: center;
-  }
+  /* #about .bg-panel__image override removed — element is display:none on
+     mobile; .bg-panel__reveal already has background-size:cover */
 
   /* --- Section padding reductions --- */
   .bg-panel__content {

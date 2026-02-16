@@ -101,14 +101,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (isMobileView) {
-        // MOBILE: No inner div needed — no parallax/zoom/pinning.
-        // Set background directly on the outer element to avoid
-        // stacking/lazy-load issues that cause wrong images to show.
-        // CSS default background-size: cover handles all sections correctly.
-        if (bgUrl) {
-          bgImage.style.backgroundImage = "url('" + bgUrl + "')";
-          bgImage.removeAttribute('data-bg');
+        // MOBILE: Set background on the reveal container so image and
+        // box-shadow mask share the same compositor layer — prevents
+        // iOS Safari momentum-scroll desync that exposes the full image.
+        var reveal = panel.querySelector('.bg-panel__reveal');
+        if (bgUrl && reveal) {
+          reveal.style.backgroundImage = "url('" + bgUrl + "')";
         }
+        bgImage.removeAttribute('data-bg');
         return; // skip inner div creation on mobile
       }
 
@@ -374,27 +374,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
 
-      // --- MOBILE: inverted parallax (reverse of desktop direction) ---
+      // --- MOBILE: subtle bg-position parallax on the reveal container ---
+      // Scale animation dropped (would scale children). Background is now
+      // on .bg-panel__reveal itself, so we animate it directly.
       '(max-width: 767px)': function () {
         revealSections.forEach(function (reveal) {
-          var panel = reveal.closest('.bg-panel');
-          var bgImage = panel ? panel.querySelector('.bg-panel__image') : null;
-          if (!bgImage) return;
-
-          // Inverted zoom: starts zoomed in, eases back to normal
-          gsap.fromTo(bgImage, { scale: 1.12 }, {
-            scale: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: reveal,
-              start: 'top 80%',
-              end: 'bottom 20%',
-              scrub: 1
-            }
-          });
-
-          // Inverted bg-position shift: pans upward instead of downward
-          gsap.fromTo(bgImage, {
+          gsap.fromTo(reveal, {
             backgroundPosition: '50% 60%'
           }, {
             backgroundPosition: '50% 40%',
@@ -403,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
               trigger: reveal,
               start: 'top 80%',
               end: 'bottom 20%',
-              scrub: 1
+              scrub: 0.5
             }
           });
         });
