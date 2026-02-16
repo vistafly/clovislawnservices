@@ -2247,12 +2247,11 @@ h1, h2, h3, h4, h5, h6 {
 /* --- Mobile: blob mask adjustments --- */
 @media (max-width: 767px) {
   .bg-panel__reveal {
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-bottom: var(--space-xl);
+    padding: var(--space-2xl) 0 var(--space-xl);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
